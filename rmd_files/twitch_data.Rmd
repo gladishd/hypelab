@@ -1,0 +1,401 @@
+---
+title: "twitch_data"
+author: "Dean"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(qdap)
+library(dplyr)
+library(tm)
+library(wordcloud)
+library(plotrix)
+library(dendextend)
+library(ggplot2)
+library(ggthemes)
+library(RWeka)
+
+library(readr)
+
+library(devtools)
+```
+
+## HypeLab (make sure to refresh after creating new folders)
+
+```{r hypelab}
+library(readr)
+X732422168 <- read_csv("HypeLab/chat_data/chat_data/732422168.csv")
+highlights <- read_csv("HypeLab/highlights.csv")
+
+```
+
+
+```{r}
+#View(X732422168$message)
+```
+
+## Plots
+
+```{r plots, echo=FALSE}
+# qdap is loaded
+
+# Print new_text to the console
+new_text <- "DataCamp is the first online learning platform that focuses on building the best learning experience specifically for Data Science. We have offices in Boston and Belgium and to date, we trained over 250,000 (aspiring) data scientists in over 150 countries. These data science enthusiasts completed more than 9 million exercises. You can take free beginner courses, or subscribe for $25/month to get access to all premium courses."
+
+#new_text_split <- strsplit(new_text, ' ')
+
+# Find the 10 most frequent terms: term_count
+term_count <- freq_terms(new_text, 10)
+#term_count <- sort(table(new_text_split), decreasing=T)
+
+# Plot term_count
+plot(term_count)
+```
+
+```{r morePlots}
+library(tidytext)
+library(tidyverse)
+library(rmarkdown)
+```
+
+
+```{r}
+X732422168$message[1]
+cat(X732422168$message[1])
+
+s <- list(name="DataFlair", age=29, GPA = 4.0)
+
+class(s) <- "student"
+
+s
+
+#library(jsonlite)
+
+
+
+library(rjson)
+library(stringr)
+original <- "{'body': 'yoooooooooooo', 'fragments': [{'text': 'yoooooooooooo'}], 'is_action': False, 'user_color': '#0000FF', 'user_notice_params': {}}"
+temp <- str_replace_all(original, "'", "\"")
+temp <- str_replace_all(temp, "False", "\"False\"")
+temp <- str_replace_all(temp, "True", "\"True\"")
+converted <- fromJSON(temp)
+
+```
+
+```{r}
+# possible prerequisite calculations:
+unique_vod_id_values <- unique(highlights$vod_id)
+
+
+
+# For each row of highlights: 
+# 1. Use the Timestamp and Length columns to calculate a specific range of time: 
+#         (timestamp, timestamp + length)
+highlights_modified <- highlights %>% 
+  mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
+  filter(vod_id == 732422168)
+
+lower_bound1 <- highlights_modified$timestamp[1]
+upper_bound1 <- highlights_modified$timestamp_plus_length[1]
+
+lower_bound2 <- highlights_modified$timestamp[2]
+upper_bound2 <- highlights_modified$timestamp_plus_length[2]
+
+vod_id_value <- highlights_modified$vod_id[1]
+
+
+# 2. Take the vod_id value for that row, and find the corresponding file from chat_data.
+
+corresponding_file <- X732422168
+
+#         * For this file: if content_offset_seconds is within (timestamp, timestamp + length), 
+#                          then put that Message into bucket 1.  
+#                          otherwise, put that Message into bucket 2.  
+# Compare word frequency between bucket 1 and bucket 2
+
+
+# (corresponding_file$content_offset_seconds[2800] >= lower_bound) && (corresponding_file$content_offset_seconds[2800] <= upper_bound) returns TRUE
+
+
+library(rjson)
+library(stringr)
+
+
+bucket1 <- vector() # part of the highlight
+bucket2 <- vector() # not part of the highlight
+for (i in 1:nrow(corresponding_file)) { # if the content offset is within the bounds
+  tryCatch({
+    original <- corresponding_file$message[i]
+    # Before making replacements to make *original* a valid JSON string, we need to 
+    # protect the textual integrity of the value referred to by body and 
+    # the value referred to by fragments/text, which is clearly derived from the body key.  
+    
+    #firstPart <- "{'body': '"
+    #remainder <- sub(".*body': '", "", original) 
+    #secondPart <- sub("', 'fragments.*", "", remainder)
+    #thirdPart <- "', 'fragments': [{'text': '"
+    #remainder <- sub(".*'text': '", "", original)
+    #fourthPart <- sub("'}], 'is_action'.*", "", remainder)
+    #lastPart <- paste("'}], 'is_action': ", sub(".*'}], 'is_action': ", "", original), sep="")
+    
+    #firstPart, thirdPart, lastPart
+    #firstPart <- str_replace_all(firstPart, "'", "\"")
+    #firstPart <- str_replace_all(firstPart, "False", "\"False\"")
+    #firstPart <- str_replace_all(firstPart, "True", "\"True\"")
+    
+    #thirdPart <- str_replace_all(thirdPart, "'", "\"")
+    #thirdPart <- str_replace_all(thirdPart, "False", "\"False\"")
+    #thirdPart <- str_replace_all(thirdPart, "True", "\"True\"")
+    
+    #lastPart <- str_replace_all(lastPart, "'", "\"")
+    #lastPart <- str_replace_all(lastPart, "False", "\"False\"")
+    #lastPart <- str_replace_all(lastPart, "True", "\"True\"")
+    
+    #temp <- paste(firstPart, secondPart, thirdPart, fourthPart, lastPart, sep="")
+    
+    #converted <- fromJSON(temp)
+    
+    
+    
+    remainder <- sub(".*body': '", "", original) 
+    textBody <- sub("', '.*", "", remainder)
+    
+    textBody <- sub(".*body': \"", "", textBody) # a minority of entries come in a different format, with JSON-like backslashes
+    textBody <- sub("\".*", "", textBody)
+   
+    if ( # if the message we're looking at is any kind of highlight
+      
+      (
+      (corresponding_file$content_offset_seconds[i] >= lower_bound1) && (corresponding_file$content_offset_seconds[i] <= upper_bound1)
+      )
+      ||
+      (
+      (corresponding_file$content_offset_seconds[i] >= lower_bound2) && (corresponding_file$content_offset_seconds[i] <= upper_bound2)
+      )
+      ) {
+      bucket1 <- c(bucket1, textBody)
+    } else {
+      bucket2 <- c(bucket2, textBody)
+    }
+  }, error=function(e){cat("ERROR On ROW ", i, ":",conditionMessage(e), "\n")})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+# Last step is scaling this not just for one comparison but for ALL ROWS IN highlights <-> ALL FILES in chat_data
+# Figure out what each column means, as well as the key:value pairs within the message column for each chat_data file
+
+
+```
+
+```{r}
+# Find the 10 most frequent terms: term_count
+term_count_during_any_highlight <- freq_terms(bucket1, 10)
+term_count_when_no_highlight <- freq_terms(bucket2, 10)
+
+# Plot term_count
+plot(term_count_during_any_highlight)
+plot(term_count_when_no_highlight)
+```
+
+```{r}
+# Make a vector source
+bucket1_source <- VectorSource(bucket1)
+
+# Make a volatile corpus
+bucket1_corpus <- VCorpus(bucket1_source)
+
+# Clean the corpus
+#clean_corpus <- function(corpus){
+#  corpus <- tm_map(corpus, stripWhitespace)
+#  corpus <- tm_map(corpus, removePunctuation)
+#  corpus <- tm_map(corpus, content_transformer(tolower))
+#  corpus <- tm_map(corpus, removeWords, stopwords("en"))
+#  return(corpus)
+#}
+
+#bucket1_clean_corp <- clean_corpus(bucket1_corpus)
+bucket1_clean_corp <- bucket1_corpus
+
+
+# Convert TDM to matrix
+bucket1_tdm <- TermDocumentMatrix(bucket1_clean_corp)
+bucket1_m <- as.matrix(bucket1_tdm)
+
+# Sum rows and frequency data frame
+bucket1_term_freq <- rowSums(bucket1_m)
+
+head(bucket1_term_freq)
+
+bucket1_word_freqs <- data.frame(
+  term = names(bucket1_term_freq),
+  num = bucket1_term_freq
+)
+
+head(bucket1_word_freqs)
+```
+
+```{r}
+# Create purple_orange
+brown_blue_green <- brewer.pal(10, "BrBG")
+
+# Drop 2 faintest colors
+## In this case the faintest colors are in the middle as it fades from orange to purple
+
+brown_blue_green <- brown_blue_green[-(5:6)]
+
+
+# The wordcloud package is loaded
+
+# Create a wordcloud for the values in word_freqs
+wordcloud(bucket1_word_freqs$term, bucket1_word_freqs$num,
+  max.words = 100, colors=brown_blue_green)
+
+```
+
+```{r}
+# Make a vector source
+bucket2_source <- VectorSource(bucket2)
+
+# Make a volatile corpus
+bucket2_corpus <- VCorpus(bucket2_source)
+
+# Clean the corpus
+#clean_corpus <- function(corpus){
+#  corpus <- tm_map(corpus, stripWhitespace)
+#  corpus <- tm_map(corpus, removePunctuation)
+#  corpus <- tm_map(corpus, content_transformer(tolower))
+#  corpus <- tm_map(corpus, removeWords, stopwords("en"))
+#  return(corpus)
+#}
+
+#bucket2_clean_corp <- clean_corpus(bucket2_corpus)
+bucket2_clean_corp <- bucket2_corpus
+
+# Convert TDM to matrix
+bucket2_tdm <- TermDocumentMatrix(bucket2_clean_corp)
+bucket2_m <- as.matrix(bucket2_tdm)
+
+# Sum rows and frequency data frame
+bucket2_term_freq <- rowSums(bucket2_m)
+
+head(bucket2_term_freq)
+
+bucket2_word_freqs <- data.frame(
+  term = names(bucket2_term_freq),
+  num = bucket2_term_freq
+)
+
+head(bucket2_word_freqs)
+
+```
+
+
+```{r}
+# Create purple_orange
+brown_blue_green <- brewer.pal(10, "BrBG")
+
+# Drop 2 faintest colors
+## In this case the faintest colors are in the middle as it fades from orange to purple
+
+brown_blue_green <- brown_blue_green[-(5:6)]
+
+# The wordcloud package is loaded
+
+# Create a wordcloud for the values in word_freqs
+wordcloud(bucket2_word_freqs$term, bucket2_word_freqs$num,
+  max.words = 100, colors=brown_blue_green)
+
+```
+
+
+```{r commonWords}
+# Combine both corpora: all_tweets
+all_coffee <- paste(bucket1, collapse = "")
+all_chardonnay <- paste(bucket2, collapse = "")
+all_tweets <- c(all_coffee, all_chardonnay)
+
+# clean all_tweets
+all_tweets <- VectorSource(all_tweets)
+all_corpus <- VCorpus(all_tweets)
+
+
+
+# Create all_tdm
+all_tdm <- TermDocumentMatrix(all_corpus)
+
+# Give the columns distinct names
+colnames(all_tdm) <- c("during highlight", "otherwise")
+
+# Create all_m
+all_m <- as.matrix(all_tdm)
+
+# Create comparison cloud
+comparison.cloud(all_m,
+                 colors = c("orange", "blue"),
+                 max.words = 50)
+
+```
+
+```{r polarizedTagCloud}
+# Identify terms shared by both documents
+common_words <- subset(
+  all_m,
+  all_m[, 1] > 0 & all_m[, 2] > 0
+)
+
+head(common_words)
+
+# calc common words and difference
+difference <- abs(common_words[, 1] - common_words[, 2])
+common_words <- cbind(common_words, difference)
+common_words <- common_words[order(common_words[, 3],
+                                   decreasing = T), ]
+head(common_words)
+
+
+top25_df <- data.frame(x = common_words[1:25, 1],
+                       y = common_words[1:25, 2],
+                       labels = rownames(common_words[1:25, ]))
+
+# The plotrix package has been loaded
+
+# Make pyramid plot
+pyramid.plot(top25_df$x, top25_df$y,
+             labels = top25_df$labels, 
+             main = "Words in Common",
+             gap = 228,
+             laxlab = NULL,
+             raxlab = NULL, 
+             unit = NULL,
+             top.labels = c("During Highlights",
+                            "Words",
+                            "Otherwise")
+             )
+
+```
+
+
+```{r wordAssociations}
+#word_associate(
+ # bucket2_word_freqs,
+ # match.string = c("kekw"),
+  #stopwords = c(Top200Words, "coffee", "amp"),
+ # network.plot = T,
+#  cloud.colors = c("gray85", "darkred")
+ # )
+```
