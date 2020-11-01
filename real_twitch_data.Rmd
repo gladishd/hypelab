@@ -1,0 +1,674 @@
+---
+title: "twitch_data"
+author: "Dean"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(qdap)
+library(dplyr)
+library(tm)
+library(wordcloud)
+library(plotrix)
+library(dendextend)
+library(ggplot2)
+library(ggthemes)
+library(RWeka)
+
+library(readr)
+
+library(devtools)
+```
+
+## HypeLab (make sure to refresh after creating new folders)
+
+```{r hypelab}
+library(readr)
+#Sometimes you may want to use another directory as the working directory. The usual way to change the working directory is setwd(), but please note that setwd() is not persistent in R Markdown (or other types of knitr source documents), which means setwd() only works for the current code chunk, and the working directory will be restored after this code chunk has been evaluated.
+
+
+# Thank you for putting the content_id on there!  It's so easy to figure out which VoD each row refers to!  Now I can merge all files together with ease.  
+setwd("C:/Users/gladi/Downloads")
+X732422168 <- read_csv("HypeLab/chat_data/732422168.csv")
+X732590883 <- read_csv("HypeLab/chat_data/732590883.csv")
+X732649888 <- read_csv("HypeLab/chat_data/732649888.csv")
+X732902745 <- read_csv("HypeLab/chat_data/732902745.csv")
+X732923687 <- read_csv("HypeLab/chat_data/732923687.csv")
+X733055333 <- read_csv("HypeLab/chat_data/733055333.csv")
+X733141847 <- read_csv("HypeLab/chat_data/733141847.csv")
+X733218074 <- read_csv("HypeLab/chat_data/733218074.csv")
+X733309525 <- read_csv("HypeLab/chat_data/733309525.csv")
+X733381724 <- read_csv("HypeLab/chat_data/733381724.csv")
+X733423912 <- read_csv("HypeLab/chat_data/733423912.csv")
+X733560822 <- read_csv("HypeLab/chat_data/733560822.csv")
+X733617744 <- read_csv("HypeLab/chat_data/733617744.csv")
+X733778047 <- read_csv("HypeLab/chat_data/733778047.csv")
+X733888858 <- read_csv("HypeLab/chat_data/733888858.csv")
+X733897215 <- read_csv("HypeLab/chat_data/733897215.csv")
+X733961959 <- read_csv("HypeLab/chat_data/733961959.csv")
+X734080945 <- read_csv("HypeLab/chat_data/734080945.csv")
+X734084727 <- read_csv("HypeLab/chat_data/734084727.csv")
+X734149980 <- read_csv("HypeLab/chat_data/734149980.csv")
+X734152320 <- read_csv("HypeLab/chat_data/734152320.csv")
+X734297975 <- read_csv("HypeLab/chat_data/734297975.csv")
+X734462011 <- read_csv("HypeLab/chat_data/734462011.csv")
+X734509535 <- read_csv("HypeLab/chat_data/734509535.csv")
+X734515241 <- read_csv("HypeLab/chat_data/734515241.csv")
+X734599846 <- read_csv("HypeLab/chat_data/734599846.csv")
+X734634839 <- read_csv("HypeLab/chat_data/734634839.csv")
+X734642382 <- read_csv("HypeLab/chat_data/734642382.csv")
+X734658719 <- read_csv("HypeLab/chat_data/734658719.csv")
+X734658912 <- read_csv("HypeLab/chat_data/734658912.csv")
+X734659884 <- read_csv("HypeLab/chat_data/734659884.csv")
+X734712546 <- read_csv("HypeLab/chat_data/734712546.csv")
+X734723250 <- read_csv("HypeLab/chat_data/734723250.csv")
+X734813973 <- read_csv("HypeLab/chat_data/734813973.csv")
+X734863301 <- read_csv("HypeLab/chat_data/734863301.csv")
+X735037542 <- read_csv("HypeLab/chat_data/735037542.csv")
+X735069020 <- read_csv("HypeLab/chat_data/735069020.csv")
+X735098869 <- read_csv("HypeLab/chat_data/735098869.csv")
+X735138477 <- read_csv("HypeLab/chat_data/735138477.csv")
+X735238359 <- read_csv("HypeLab/chat_data/735238359.csv")
+X735324021 <- read_csv("HypeLab/chat_data/735324021.csv")
+X735365724 <- read_csv("HypeLab/chat_data/735365724.csv")
+X735388275 <- read_csv("HypeLab/chat_data/735388275.csv")
+X735406816 <- read_csv("HypeLab/chat_data/735406816.csv")
+X735431204 <- read_csv("HypeLab/chat_data/735431204.csv")
+X735446517 <- read_csv("HypeLab/chat_data/735446517.csv")
+X735501370 <- read_csv("HypeLab/chat_data/735501370.csv")
+X735573553 <- read_csv("HypeLab/chat_data/735573553.csv")
+X735627516 <- read_csv("HypeLab/chat_data/735627516.csv")
+X735681997 <- read_csv("HypeLab/chat_data/735681997.csv")
+X735760878 <- read_csv("HypeLab/chat_data/735760878.csv")
+X735802228 <- read_csv("HypeLab/chat_data/735802228.csv")
+X735874898 <- read_csv("HypeLab/chat_data/735874898.csv")
+X735888527 <- read_csv("HypeLab/chat_data/735888527.csv")
+X735966185 <- read_csv("HypeLab/chat_data/735966185.csv")
+X736060712 <- read_csv("HypeLab/chat_data/736060712.csv")
+X736078601 <- read_csv("HypeLab/chat_data/736078601.csv")
+X736081921 <- read_csv("HypeLab/chat_data/736081921.csv")
+X736083431 <- read_csv("HypeLab/chat_data/736083431.csv")
+X736099235 <- read_csv("HypeLab/chat_data/736099235.csv")
+X736114714 <- read_csv("HypeLab/chat_data/736114714.csv")
+X736275158 <- read_csv("HypeLab/chat_data/736275158.csv")
+X736298400 <- read_csv("HypeLab/chat_data/736298400.csv")
+X738399552 <- read_csv("HypeLab/chat_data/738399552.csv")
+X738453831 <- read_csv("HypeLab/chat_data/738453831.csv")
+X738603474 <- read_csv("HypeLab/chat_data/738603474.csv")
+X738704813 <- read_csv("HypeLab/chat_data/738704813.csv")
+X738830532 <- read_csv("HypeLab/chat_data/738830532.csv")
+X738867256 <- read_csv("HypeLab/chat_data/738867256.csv")
+X738995313 <- read_csv("HypeLab/chat_data/738995313.csv")
+X739077387 <- read_csv("HypeLab/chat_data/739077387.csv")
+X739134629 <- read_csv("HypeLab/chat_data/739134629.csv")
+X739285759 <- read_csv("HypeLab/chat_data/739285759.csv")
+X739300735 <- read_csv("HypeLab/chat_data/739300735.csv")
+X739353870 <- read_csv("HypeLab/chat_data/739353870.csv")
+X739377281 <- read_csv("HypeLab/chat_data/739377281.csv")
+X739435110 <- read_csv("HypeLab/chat_data/739435110.csv")
+X739493901 <- read_csv("HypeLab/chat_data/739493901.csv")
+X739673683 <- read_csv("HypeLab/chat_data/739673683.csv")
+X739861214 <- read_csv("HypeLab/chat_data/739861214.csv")
+X739993282 <- read_csv("HypeLab/chat_data/739993282.csv")
+X740012400 <- read_csv("HypeLab/chat_data/740012400.csv")
+X740016439 <- read_csv("HypeLab/chat_data/740016439.csv")
+X740254008 <- read_csv("HypeLab/chat_data/740254008.csv")
+X740456803 <- read_csv("HypeLab/chat_data/740456803.csv")
+X740577349 <- read_csv("HypeLab/chat_data/740577349.csv")
+X740610742 <- read_csv("HypeLab/chat_data/740610742.csv")
+X740650633 <- read_csv("HypeLab/chat_data/740650633.csv")
+X740688070 <- read_csv("HypeLab/chat_data/740688070.csv")
+X740696504 <- read_csv("HypeLab/chat_data/740696504.csv")
+X740791246 <- read_csv("HypeLab/chat_data/740791246.csv")
+X740897151 <- read_csv("HypeLab/chat_data/740897151.csv")
+X740929502 <- read_csv("HypeLab/chat_data/740929502.csv")
+X741084619 <- read_csv("HypeLab/chat_data/741084619.csv")
+X741112115 <- read_csv("HypeLab/chat_data/741112115.csv")
+X741195689 <- read_csv("HypeLab/chat_data/741195689.csv")
+X741218165 <- read_csv("HypeLab/chat_data/741218165.csv")
+X741269486 <- read_csv("HypeLab/chat_data/741269486.csv")
+X741276168 <- read_csv("HypeLab/chat_data/741276168.csv")
+X741302422 <- read_csv("HypeLab/chat_data/741302422.csv")
+X741407576 <- read_csv("HypeLab/chat_data/741407576.csv")
+X741471634 <- read_csv("HypeLab/chat_data/741471634.csv")
+X741588256 <- read_csv("HypeLab/chat_data/741588256.csv")
+X741589911 <- read_csv("HypeLab/chat_data/741589911.csv")
+X741627098 <- read_csv("HypeLab/chat_data/741627098.csv")
+X741643559 <- read_csv("HypeLab/chat_data/741643559.csv")
+X741661485 <- read_csv("HypeLab/chat_data/741661485.csv")
+X741699801 <- read_csv("HypeLab/chat_data/741699801.csv")
+X741748646 <- read_csv("HypeLab/chat_data/741748646.csv")
+X741785910 <- read_csv("HypeLab/chat_data/741785910.csv")
+X741820994 <- read_csv("HypeLab/chat_data/741820994.csv")
+X741835950 <- read_csv("HypeLab/chat_data/741835950.csv")
+X741873832 <- read_csv("HypeLab/chat_data/741873832.csv")
+X741941851 <- read_csv("HypeLab/chat_data/741941851.csv")
+X741953896 <- read_csv("HypeLab/chat_data/741953896.csv")
+X742037638 <- read_csv("HypeLab/chat_data/742037638.csv")
+X742539532 <- read_csv("HypeLab/chat_data/742539532.csv")
+X742547922 <- read_csv("HypeLab/chat_data/742547922.csv")
+X742641837 <- read_csv("HypeLab/chat_data/742641837.csv")
+X742729577 <- read_csv("HypeLab/chat_data/742729577.csv")
+X742802990 <- read_csv("HypeLab/chat_data/742802990.csv")
+X742803758 <- read_csv("HypeLab/chat_data/742803758.csv")
+X742856138 <- read_csv("HypeLab/chat_data/742856138.csv")
+X743058030 <- read_csv("HypeLab/chat_data/743058030.csv")
+X743108790 <- read_csv("HypeLab/chat_data/743108790.csv")
+X743165820 <- read_csv("HypeLab/chat_data/743165820.csv")
+X743197021 <- read_csv("HypeLab/chat_data/743197021.csv")
+X743278970 <- read_csv("HypeLab/chat_data/743278970.csv")
+X743535931 <- read_csv("HypeLab/chat_data/743535931.csv")
+X743642806 <- read_csv("HypeLab/chat_data/743642806.csv")
+X743683798 <- read_csv("HypeLab/chat_data/743683798.csv")
+X743706675 <- read_csv("HypeLab/chat_data/743706675.csv")
+X743750639 <- read_csv("HypeLab/chat_data/743750639.csv")
+X743826825 <- read_csv("HypeLab/chat_data/743826825.csv")
+X744000098 <- read_csv("HypeLab/chat_data/744000098.csv")
+X744716456 <- read_csv("HypeLab/chat_data/744716456.csv")
+X744749795 <- read_csv("HypeLab/chat_data/744749795.csv")
+X744820200 <- read_csv("HypeLab/chat_data/744820200.csv")
+X744863077 <- read_csv("HypeLab/chat_data/744863077.csv")
+X744978950 <- read_csv("HypeLab/chat_data/744978950.csv")
+X744986081 <- read_csv("HypeLab/chat_data/744986081.csv")
+X745021335 <- read_csv("HypeLab/chat_data/745021335.csv")
+X745033438 <- read_csv("HypeLab/chat_data/745033438.csv")
+X745064355 <- read_csv("HypeLab/chat_data/745064355.csv")
+X745095778 <- read_csv("HypeLab/chat_data/745095778.csv")
+X745103945 <- read_csv("HypeLab/chat_data/745103945.csv")
+X745104227 <- read_csv("HypeLab/chat_data/745104227.csv")
+X745202461 <- read_csv("HypeLab/chat_data/745202461.csv")
+X745229298 <- read_csv("HypeLab/chat_data/745229298.csv")
+X745532793 <- read_csv("HypeLab/chat_data/745532793.csv")
+X745586635 <- read_csv("HypeLab/chat_data/745586635.csv")
+X745724664 <- read_csv("HypeLab/chat_data/745724664.csv")
+X745725181 <- read_csv("HypeLab/chat_data/745725181.csv")
+X745794265 <- read_csv("HypeLab/chat_data/745794265.csv")
+X745894887 <- read_csv("HypeLab/chat_data/745894887.csv")
+X745916093 <- read_csv("HypeLab/chat_data/745916093.csv")
+X745979816 <- read_csv("HypeLab/chat_data/745979816.csv")
+X746008884 <- read_csv("HypeLab/chat_data/746008884.csv")
+X746017979 <- read_csv("HypeLab/chat_data/746017979.csv")
+X746067139 <- read_csv("HypeLab/chat_data/746067139.csv")
+X746192173 <- read_csv("HypeLab/chat_data/746192173.csv")
+X746237660 <- read_csv("HypeLab/chat_data/746237660.csv")
+X746354761 <- read_csv("HypeLab/chat_data/746354761.csv")
+X746543309 <- read_csv("HypeLab/chat_data/746543309.csv")
+X746605777 <- read_csv("HypeLab/chat_data/746605777.csv")
+X746694425 <- read_csv("HypeLab/chat_data/746694425.csv")
+X746812421 <- read_csv("HypeLab/chat_data/746812421.csv")
+X746812792 <- read_csv("HypeLab/chat_data/746812792.csv")
+X748857757 <- read_csv("HypeLab/chat_data/748857757.csv")
+X748862134 <- read_csv("HypeLab/chat_data/748862134.csv")
+X748886983 <- read_csv("HypeLab/chat_data/748886983.csv")
+X749043488 <- read_csv("HypeLab/chat_data/749043488.csv")
+X749133787 <- read_csv("HypeLab/chat_data/749133787.csv")
+X749168536 <- read_csv("HypeLab/chat_data/749168536.csv")
+X749217129 <- read_csv("HypeLab/chat_data/749217129.csv")
+X749385237 <- read_csv("HypeLab/chat_data/749385237.csv")
+X749480811 <- read_csv("HypeLab/chat_data/749480811.csv")
+X749563932 <- read_csv("HypeLab/chat_data/749563932.csv")
+X749572538 <- read_csv("HypeLab/chat_data/749572538.csv")
+X749626536 <- read_csv("HypeLab/chat_data/749626536.csv")
+X749706053 <- read_csv("HypeLab/chat_data/749706053.csv")
+X749709633 <- read_csv("HypeLab/chat_data/749709633.csv")
+X749771125 <- read_csv("HypeLab/chat_data/749771125.csv")
+X749801009 <- read_csv("HypeLab/chat_data/749801009.csv")
+X749906356 <- read_csv("HypeLab/chat_data/749906356.csv")
+X749996120 <- read_csv("HypeLab/chat_data/749996120.csv")
+X749998158 <- read_csv("HypeLab/chat_data/749998158.csv")
+X750082337 <- read_csv("HypeLab/chat_data/750082337.csv")
+X750117402 <- read_csv("HypeLab/chat_data/750117402.csv")
+X750152941 <- read_csv("HypeLab/chat_data/750152941.csv")
+X750245426 <- read_csv("HypeLab/chat_data/750245426.csv")
+X750561643 <- read_csv("HypeLab/chat_data/750561643.csv")
+X751921888 <- read_csv("HypeLab/chat_data/751921888.csv")
+X751985019 <- read_csv("HypeLab/chat_data/751985019.csv")
+X752038852 <- read_csv("HypeLab/chat_data/752038852.csv")
+X752149221 <- read_csv("HypeLab/chat_data/752149221.csv")
+X752212664 <- read_csv("HypeLab/chat_data/752212664.csv")
+X752714338 <- read_csv("HypeLab/chat_data/752714338.csv")
+X752730210 <- read_csv("HypeLab/chat_data/752730210.csv")
+X752770512 <- read_csv("HypeLab/chat_data/752770512.csv")
+X752781099 <- read_csv("HypeLab/chat_data/752781099.csv")
+X752848796 <- read_csv("HypeLab/chat_data/752848796.csv")
+X753029621 <- read_csv("HypeLab/chat_data/753029621.csv")
+X753109461 <- read_csv("HypeLab/chat_data/753109461.csv")
+X753175271 <- read_csv("HypeLab/chat_data/753175271.csv")
+X753444544 <- read_csv("HypeLab/chat_data/753444544.csv")
+X753631208 <- read_csv("HypeLab/chat_data/753631208.csv")
+X753812846 <- read_csv("HypeLab/chat_data/753812846.csv")
+X753884301 <- read_csv("HypeLab/chat_data/753884301.csv")
+X755250632 <- read_csv("HypeLab/chat_data/755250632.csv")
+X755360796 <- read_csv("HypeLab/chat_data/755360796.csv")
+X755466433 <- read_csv("HypeLab/chat_data/755466433.csv")
+X755761888 <- read_csv("HypeLab/chat_data/755761888.csv")
+X756028285 <- read_csv("HypeLab/chat_data/756028285.csv")
+X756339345 <- read_csv("HypeLab/chat_data/756339345.csv")
+X756355377 <- read_csv("HypeLab/chat_data/756355377.csv")
+X756381896 <- read_csv("HypeLab/chat_data/756381896.csv")
+X756467809 <- read_csv("HypeLab/chat_data/756467809.csv")
+X756764211 <- read_csv("HypeLab/chat_data/756764211.csv")
+X756867423 <- read_csv("HypeLab/chat_data/756867423.csv")
+
+highlights <- read_csv("HypeLab/highlights.csv")
+
+```
+
+
+```{r makeAggregate}
+setwd("C:/Users/gladi/Downloads/HypeLab/chat_data")
+
+#for (data in list.files()){
+#  
+#  # Create the first data if no data exist yet
+#  if (!exists("dataset")){
+#    dataset <- read.csv(data, header=TRUE)
+#  }
+#  
+#  # if data already exist, then append it together
+#  if (exists("dataset")){
+#    tempory <-read.csv(data, header=TRUE)
+#    dataset <-unique(rbind(dataset, tempory))
+#    rm(tempory)
+#  }
+#}
+
+# much quicker
+library(plyr)
+dataset <- ldply(list.files(), read.csv, header=TRUE)
+
+View(dataset)
+
+#View(X732422168$message)
+```
+
+## Plots
+
+```{r plots, echo=FALSE}
+# qdap is loaded
+
+# Print new_text to the console
+new_text <- "DataCamp is the first online learning platform that focuses on building the best learning experience specifically for Data Science. We have offices in Boston and Belgium and to date, we trained over 250,000 (aspiring) data scientists in over 150 countries. These data science enthusiasts completed more than 9 million exercises. You can take free beginner courses, or subscribe for $25/month to get access to all premium courses."
+
+#new_text_split <- strsplit(new_text, ' ')
+
+# Find the 10 most frequent terms: term_count
+term_count <- freq_terms(new_text, 10)
+#term_count <- sort(table(new_text_split), decreasing=T)
+
+# Plot term_count
+plot(term_count)
+```
+
+```{r morePlots}
+library(tidytext)
+library(tidyverse)
+library(rmarkdown)
+```
+
+
+```{r}
+X732422168$message[1]
+cat(X732422168$message[1])
+
+s <- list(name="DataFlair", age=29, GPA = 4.0)
+
+class(s) <- "student"
+
+s
+
+#library(jsonlite)
+
+
+
+library(rjson)
+library(stringr)
+original <- "{'body': 'yoooooooooooo', 'fragments': [{'text': 'yoooooooooooo'}], 'is_action': False, 'user_color': '#0000FF', 'user_notice_params': {}}"
+temp <- str_replace_all(original, "'", "\"")
+temp <- str_replace_all(temp, "False", "\"False\"")
+temp <- str_replace_all(temp, "True", "\"True\"")
+converted <- fromJSON(temp)
+
+```
+
+```{r runThisChunkForTheMainTest}
+# possible prerequisite calculations:
+unique_vod_id_values <- unique(highlights$vod_id)
+
+
+
+# For each row of highlights: 
+# 1. Use the Timestamp and Length columns to calculate a specific range of time: 
+#         (timestamp, timestamp + length)
+highlights_modified <- highlights %>% 
+  mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
+  filter(vod_id == 732422168)
+
+lower_bound1 <- highlights_modified$timestamp[1]
+upper_bound1 <- highlights_modified$timestamp_plus_length[1]
+
+lower_bound2 <- highlights_modified$timestamp[2]
+upper_bound2 <- highlights_modified$timestamp_plus_length[2]
+
+allBoundsNested <- vector()
+for (i in 1:nrow(highlights_modified)) {
+  lowerBoundTemp <- highlights_modified$timestamp[i]
+  upperBoundTemp <- highlights_modified$timestamp_plus_length[i]
+  boundsVector <- c(lowerBoundTemp, upperBoundTemp)
+  allBoundsNested <- c(allBoundsNested, boundsVector)
+}
+
+vod_id_value <- highlights_modified$vod_id[1]
+
+
+# 2. Take the vod_id value for that row, and find the corresponding file from chat_data.
+
+corresponding_file <- X732422168
+
+#         * For this file: if content_offset_seconds is within (timestamp, timestamp + length), 
+#                          then put that Message into bucket 1.  
+#                          otherwise, put that Message into bucket 2.  
+# Compare word frequency between bucket 1 and bucket 2
+
+
+# (corresponding_file$content_offset_seconds[2800] >= lower_bound) && (corresponding_file$content_offset_seconds[2800] <= upper_bound) returns TRUE
+
+
+library(rjson)
+library(stringr)
+
+
+bucket1 <- vector() # part of the highlight
+bucket2 <- vector() # not part of the highlight
+for (i in 1:nrow(corresponding_file)) { # if the content offset is within the bounds
+  tryCatch({
+    original <- corresponding_file$message[i]
+    # Before making replacements to make *original* a valid JSON string, we need to 
+    # protect the textual integrity of the value referred to by body and 
+    # the value referred to by fragments/text, which is clearly derived from the body key.  
+    
+    #firstPart <- "{'body': '"
+    #remainder <- sub(".*body': '", "", original) 
+    #secondPart <- sub("', 'fragments.*", "", remainder)
+    #thirdPart <- "', 'fragments': [{'text': '"
+    #remainder <- sub(".*'text': '", "", original)
+    #fourthPart <- sub("'}], 'is_action'.*", "", remainder)
+    #lastPart <- paste("'}], 'is_action': ", sub(".*'}], 'is_action': ", "", original), sep="")
+    
+    #firstPart, thirdPart, lastPart
+    #firstPart <- str_replace_all(firstPart, "'", "\"")
+    #firstPart <- str_replace_all(firstPart, "False", "\"False\"")
+    #firstPart <- str_replace_all(firstPart, "True", "\"True\"")
+    
+    #thirdPart <- str_replace_all(thirdPart, "'", "\"")
+    #thirdPart <- str_replace_all(thirdPart, "False", "\"False\"")
+    #thirdPart <- str_replace_all(thirdPart, "True", "\"True\"")
+    
+    #lastPart <- str_replace_all(lastPart, "'", "\"")
+    #lastPart <- str_replace_all(lastPart, "False", "\"False\"")
+    #lastPart <- str_replace_all(lastPart, "True", "\"True\"")
+    
+    #temp <- paste(firstPart, secondPart, thirdPart, fourthPart, lastPart, sep="")
+    
+    #converted <- fromJSON(temp)
+    
+    
+    
+    remainder <- sub(".*body': '", "", original) 
+    textBody <- sub("', '.*", "", remainder)
+    
+    textBody <- sub(".*body': \"", "", textBody) # a minority of entries come in a different format, with JSON-like backslashes
+    textBody <- sub("\".*", "", textBody)
+    
+    
+    
+    #isHighlight <- FALSE
+    #for (j in 1:length(allBoundsNested)) {
+    #  if (j %% 2 == 1) { # if it's an odd index
+    #    if (
+    #      dataset$content_offset_seconds[j] >= allBoundsNested[j]
+    #      && 
+    #      dataset$content_offset_seconds[j + 1] <= allBoundsNested[j + 1]
+    #    ) {
+    #      isHighlight <- TRUE
+    #      }
+    #  }
+    #}
+    
+
+    if ( 
+      #if the message we're looking at is any kind of highlight
+      (
+      (corresponding_file$content_offset_seconds[i] >= lower_bound1) && (corresponding_file$content_offset_seconds[i] <= upper_bound1)
+      )
+      ||
+      (
+      (corresponding_file$content_offset_seconds[i] >= lower_bound2) && (corresponding_file$content_offset_seconds[i] <= upper_bound2)
+      )
+      ) {
+    # if (isHighlight) {
+      bucket1 <- c(bucket1, textBody)
+    } else {
+      bucket2 <- c(bucket2, textBody)
+    }
+  }, error=function(e){cat("ERROR On ROW ", i, ":",conditionMessage(e), "\n")})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+# Last step is scaling this not just for one comparison but for ALL ROWS IN highlights <-> ALL FILES in chat_data
+# Figure out what each column means, as well as the key:value pairs within the message column for each chat_data file
+
+
+```
+
+```{r}
+# Find the 10 most frequent terms: term_count
+term_count_during_any_highlight <- freq_terms(bucket1, 10)
+term_count_when_no_highlight <- freq_terms(bucket2, 10)
+
+# Plot term_count
+plot(term_count_during_any_highlight)
+plot(term_count_when_no_highlight)
+```
+
+```{r}
+# Make a vector source
+bucket1_source <- VectorSource(bucket1)
+
+# Make a volatile corpus
+bucket1_corpus <- VCorpus(bucket1_source)
+
+# Clean the corpus
+#clean_corpus <- function(corpus){
+#  corpus <- tm_map(corpus, stripWhitespace)
+#  corpus <- tm_map(corpus, removePunctuation)
+#  corpus <- tm_map(corpus, content_transformer(tolower))
+#  corpus <- tm_map(corpus, removeWords, stopwords("en"))
+#  return(corpus)
+#}
+
+#bucket1_clean_corp <- clean_corpus(bucket1_corpus)
+bucket1_clean_corp <- bucket1_corpus
+
+
+# Convert TDM to matrix
+bucket1_tdm <- TermDocumentMatrix(bucket1_clean_corp)
+bucket1_m <- as.matrix(bucket1_tdm)
+
+# Sum rows and frequency data frame
+bucket1_term_freq <- rowSums(bucket1_m)
+
+head(bucket1_term_freq)
+
+bucket1_word_freqs <- data.frame(
+  term = names(bucket1_term_freq),
+  num = bucket1_term_freq
+)
+
+head(bucket1_word_freqs)
+```
+
+```{r}
+# Create purple_orange
+brown_blue_green <- brewer.pal(10, "BrBG")
+
+# Drop 2 faintest colors
+## In this case the faintest colors are in the middle as it fades from orange to purple
+
+brown_blue_green <- brown_blue_green[-(5:6)]
+
+
+# The wordcloud package is loaded
+
+# Create a wordcloud for the values in word_freqs
+wordcloud(bucket1_word_freqs$term, bucket1_word_freqs$num,
+  max.words = 100, colors=brown_blue_green)
+
+```
+
+```{r}
+# Make a vector source
+bucket2_source <- VectorSource(bucket2)
+
+# Make a volatile corpus
+bucket2_corpus <- VCorpus(bucket2_source)
+
+# Clean the corpus
+#clean_corpus <- function(corpus){
+#  corpus <- tm_map(corpus, stripWhitespace)
+#  corpus <- tm_map(corpus, removePunctuation)
+#  corpus <- tm_map(corpus, content_transformer(tolower))
+#  corpus <- tm_map(corpus, removeWords, stopwords("en"))
+#  return(corpus)
+#}
+
+#bucket2_clean_corp <- clean_corpus(bucket2_corpus)
+bucket2_clean_corp <- bucket2_corpus
+
+# Convert TDM to matrix
+bucket2_tdm <- TermDocumentMatrix(bucket2_clean_corp)
+bucket2_m <- as.matrix(bucket2_tdm)
+
+# Sum rows and frequency data frame
+bucket2_term_freq <- rowSums(bucket2_m)
+
+head(bucket2_term_freq)
+
+bucket2_word_freqs <- data.frame(
+  term = names(bucket2_term_freq),
+  num = bucket2_term_freq
+)
+
+head(bucket2_word_freqs)
+
+```
+
+
+```{r}
+# Create purple_orange
+brown_blue_green <- brewer.pal(10, "BrBG")
+
+# Drop 2 faintest colors
+## In this case the faintest colors are in the middle as it fades from orange to purple
+
+brown_blue_green <- brown_blue_green[-(5:6)]
+
+# The wordcloud package is loaded
+
+# Create a wordcloud for the values in word_freqs
+wordcloud(bucket2_word_freqs$term, bucket2_word_freqs$num,
+  max.words = 100, colors=brown_blue_green)
+
+```
+
+
+```{r commonWords}
+# Combine both corpora: all_tweets
+all_coffee <- paste(bucket1, collapse = "")
+all_chardonnay <- paste(bucket2, collapse = "")
+all_tweets <- c(all_coffee, all_chardonnay)
+
+# clean all_tweets
+all_tweets <- VectorSource(all_tweets)
+all_corpus <- VCorpus(all_tweets)
+
+
+
+# Create all_tdm
+all_tdm <- TermDocumentMatrix(all_corpus)
+
+# Give the columns distinct names
+colnames(all_tdm) <- c("during highlight", "otherwise")
+
+# Create all_m
+all_m <- as.matrix(all_tdm)
+
+# Create comparison cloud
+comparison.cloud(all_m,
+                 colors = c("orange", "blue"),
+                 max.words = 50)
+
+```
+
+```{r polarizedTagCloud}
+# Identify terms shared by both documents
+common_words <- subset(
+  all_m,
+  all_m[, 1] > 0 & all_m[, 2] > 0
+)
+
+head(common_words)
+
+# calc common words and difference
+difference <- abs(common_words[, 1] - common_words[, 2])
+common_words <- cbind(common_words, difference)
+common_words <- common_words[order(common_words[, 3],
+                                   decreasing = T), ]
+head(common_words)
+
+
+top25_df <- data.frame(x = common_words[1:25, 1],
+                       y = common_words[1:25, 2],
+                       labels = rownames(common_words[1:25, ]))
+
+# The plotrix package has been loaded
+
+# Make pyramid plot
+pyramid.plot(top25_df$x, top25_df$y,
+             labels = top25_df$labels, 
+             main = "Words in Common",
+             gap = 228,
+             laxlab = NULL,
+             raxlab = NULL, 
+             unit = NULL,
+             top.labels = c("During Highlights",
+                            "Words",
+                            "Otherwise")
+             )
+
+```
+
+
+```{r wordAssociations}
+#word_associate(
+ # bucket2_word_freqs,
+ # match.string = c("kekw"),
+  #stopwords = c(Top200Words, "coffee", "amp"),
+ # network.plot = T,
+#  cloud.colors = c("gray85", "darkred")
+ # )
+```
