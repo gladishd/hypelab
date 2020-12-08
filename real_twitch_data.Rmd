@@ -362,15 +362,15 @@ correspondingFileValues = c(X732422168, X732590883, X732649888, X732902745, X732
 finalBucket1 <- vector()
 finalBucket2 <- vector()
 
-#for (i in 1:3) {
+for (i in 1:1) {
 
   # For each row of highlights: 
   # 1. Use the Timestamp and Length columns to calculate a specific range of time: 
   #         (timestamp, timestamp + length)
   highlights_modified <- highlights %>% 
     mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
-    filter(vod_id == filterByValues[1]) # <--------------------------------change this to be for different video on demand IDs.
-  corresponding_file <- eval(parse(text = 'X732422168')) # <--------------------------------change this to be for different video on demand IDs.  
+    filter(vod_id == filterByValues[i]) # <--------------------------------change this to be for different video on demand IDs.
+  corresponding_file <- eval(parse(text = paste('X', filterByValues[i], sep=''))) # <--------------------------------change this to be for different video on demand IDs.  
   #if (i == 1) { corresponding_file <- X732422168 }
   #if (i == 2) { corresponding_file <- X732590883 }
   #if (i == 3) { corresponding_file <- X732649888 }
@@ -488,12 +488,12 @@ finalBucket2 <- vector()
   finalBucket1 = c(finalBucket1, bucket1)
   finalBucket2 = c(finalBucket2, bucket2)
 
-#}
+}
 
 # Last step is scaling this not just for one comparison but for ALL ROWS IN highlights <-> ALL FILES in chat_data
 # Figure out what each column means, as well as the key:value pairs within the message column for each chat_data file
-bucket1 <- finalBucket1
-bucket2 <- finalBucket2
+bucket1 <- finalBucket1 # length for video file 1 is 340
+bucket2 <- finalBucket2 # length for video file 2 is 11845
 
 ```
 
