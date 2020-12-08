@@ -32,8 +32,14 @@ library(readr)
 
 
 # Thank you for putting the content_id on there!  It's so easy to figure out which VoD each row refers to!  Now I can merge all files together with ease.  
-setwd("C:/Users/gladi/Downloads")
+setwd("C:/Users/gladi/Downloads/HypeLab/hypelab-main/rmd_files")
 X732422168 <- read_csv("HypeLab/chat_data/732422168.csv")
+highlights <- read_csv("HypeLab/highlights.csv")
+
+```
+
+```{r}
+setwd("C:/Users/gladi/Downloads/HypeLab/hypelab-main/rmd_files")
 X732590883 <- read_csv("HypeLab/chat_data/732590883.csv")
 X732649888 <- read_csv("HypeLab/chat_data/732649888.csv")
 X732902745 <- read_csv("HypeLab/chat_data/732902745.csv")
@@ -254,13 +260,13 @@ X756467809 <- read_csv("HypeLab/chat_data/756467809.csv")
 X756764211 <- read_csv("HypeLab/chat_data/756764211.csv")
 X756867423 <- read_csv("HypeLab/chat_data/756867423.csv")
 
-highlights <- read_csv("HypeLab/highlights.csv")
+
 
 ```
 
 
 ```{r makeAggregate}
-setwd("C:/Users/gladi/Downloads/HypeLab/chat_data")
+#setwd("C:/Users/gladi/Downloads/HypeLab/chat_data")
 
 #for (data in list.files()){
 #  
@@ -335,143 +341,159 @@ converted <- fromJSON(temp)
 
 ```
 
+
+```{r}
+filterByValues = c(732422168, 732590883, 732649888, 732902745, 732923687, 733055333, 733141847, 733218074, 733309525, 733381724, 733423912, 733560822, 733617744, 733778047, 733888858, 733897215, 733961959, 734080945, 734084727, 734149980, 734152320, 734297975, 734462011, 734509535, 734515241, 734599846, 734634839, 734642382, 734658719, 734658912, 734659884, 734712546, 734723250, 734813973, 734863301, 735037542, 735069020, 735098869, 735138477, 735238359, 735324021, 735365724, 735388275, 735406816, 735431204, 735446517, 735501370, 735573553, 735627516, 735681997, 735760878, 735802228, 735874898, 735888527, 735966185, 736060712, 736078601, 736081921, 736083431, 736099235, 736114714, 736275158, 736298400, 738399552, 738453831, 738603474, 738704813, 738830532, 738867256, 738995313, 739077387, 739134629, 739285759, 739300735, 739353870, 739377281, 739435110, 739493901, 739673683, 739861214, 739993282, 740012400, 740016439, 740254008, 740456803, 740577349, 740610742, 740650633, 740688070, 740696504, 740791246, 740897151, 740929502, 741084619, 741112115, 741195689, 741218165, 741269486, 741276168, 741302422, 741407576, 741471634, 741588256, 741589911, 741627098, 741643559, 741661485, 741699801, 741748646, 741785910, 741820994, 741835950, 741873832, 741941851, 741953896, 742037638, 742539532, 742547922, 742641837, 742729577, 742802990, 742803758, 742856138, 743058030, 743108790, 743165820, 743197021, 743278970, 743535931, 743642806, 743683798, 743706675, 743750639, 743826825, 744000098, 744716456, 744749795, 744820200, 744863077, 744978950, 744986081, 745021335, 745033438, 745064355, 745095778, 745103945, 745104227, 745202461, 745229298, 745532793, 745586635, 745724664, 745725181, 745794265, 745894887, 745916093, 745979816, 746008884, 746017979, 746067139, 746192173, 746237660, 746354761, 746543309, 746605777, 746694425, 746812421, 746812792, 748857757, 748862134, 748886983, 749043488, 749133787, 749168536, 749217129, 749385237, 749480811, 749563932, 749572538, 749626536, 749706053, 749709633, 749771125, 749801009, 749906356, 749996120, 749998158, 750082337, 750117402, 750152941, 750245426, 750561643, 751921888, 751985019, 752038852, 752149221, 752212664, 752714338, 752730210, 752770512, 752781099, 752848796, 753029621, 753109461, 753175271, 753444544, 753631208, 753812846, 753884301, 755250632, 755360796, 755466433, 755761888, 756028285, 756339345, 756355377, 756381896, 756467809, 756764211, 756867423)
+length(filterByValues)
+```
+
+
+
 ```{r runThisChunkForTheMainTest}
 # possible prerequisite calculations:
 unique_vod_id_values <- unique(highlights$vod_id)
 
 
-
-# For each row of highlights: 
-# 1. Use the Timestamp and Length columns to calculate a specific range of time: 
-#         (timestamp, timestamp + length)
-highlights_modified <- highlights %>% 
-  mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
-  filter(vod_id == 732422168)
-
-lower_bound1 <- highlights_modified$timestamp[1]
-upper_bound1 <- highlights_modified$timestamp_plus_length[1]
-
-lower_bound2 <- highlights_modified$timestamp[2]
-upper_bound2 <- highlights_modified$timestamp_plus_length[2]
-
-allBoundsNested <- vector()
-for (i in 1:nrow(highlights_modified)) {
-  lowerBoundTemp <- highlights_modified$timestamp[i]
-  upperBoundTemp <- highlights_modified$timestamp_plus_length[i]
-  boundsVector <- c(lowerBoundTemp, upperBoundTemp)
-  allBoundsNested <- c(allBoundsNested, boundsVector)
-}
-
-vod_id_value <- highlights_modified$vod_id[1]
+filterByValues = c(732422168, 732590883, 732649888, 732902745, 732923687, 733055333, 733141847, 733218074, 733309525, 733381724, 733423912, 733560822, 733617744, 733778047, 733888858, 733897215, 733961959, 734080945, 734084727, 734149980, 734152320, 734297975, 734462011, 734509535, 734515241, 734599846, 734634839, 734642382, 734658719, 734658912, 734659884, 734712546, 734723250, 734813973, 734863301, 735037542, 735069020, 735098869, 735138477, 735238359, 735324021, 735365724, 735388275, 735406816, 735431204, 735446517, 735501370, 735573553, 735627516, 735681997, 735760878, 735802228, 735874898, 735888527, 735966185, 736060712, 736078601, 736081921, 736083431, 736099235, 736114714, 736275158, 736298400, 738399552, 738453831, 738603474, 738704813, 738830532, 738867256, 738995313, 739077387, 739134629, 739285759, 739300735, 739353870, 739377281, 739435110, 739493901, 739673683, 739861214, 739993282, 740012400, 740016439, 740254008, 740456803, 740577349, 740610742, 740650633, 740688070, 740696504, 740791246, 740897151, 740929502, 741084619, 741112115, 741195689, 741218165, 741269486, 741276168, 741302422, 741407576, 741471634, 741588256, 741589911, 741627098, 741643559, 741661485, 741699801, 741748646, 741785910, 741820994, 741835950, 741873832, 741941851, 741953896, 742037638, 742539532, 742547922, 742641837, 742729577, 742802990, 742803758, 742856138, 743058030, 743108790, 743165820, 743197021, 743278970, 743535931, 743642806, 743683798, 743706675, 743750639, 743826825, 744000098, 744716456, 744749795, 744820200, 744863077, 744978950, 744986081, 745021335, 745033438, 745064355, 745095778, 745103945, 745104227, 745202461, 745229298, 745532793, 745586635, 745724664, 745725181, 745794265, 745894887, 745916093, 745979816, 746008884, 746017979, 746067139, 746192173, 746237660, 746354761, 746543309, 746605777, 746694425, 746812421, 746812792, 748857757, 748862134, 748886983, 749043488, 749133787, 749168536, 749217129, 749385237, 749480811, 749563932, 749572538, 749626536, 749706053, 749709633, 749771125, 749801009, 749906356, 749996120, 749998158, 750082337, 750117402, 750152941, 750245426, 750561643, 751921888, 751985019, 752038852, 752149221, 752212664, 752714338, 752730210, 752770512, 752781099, 752848796, 753029621, 753109461, 753175271, 753444544, 753631208, 753812846, 753884301, 755250632, 755360796, 755466433, 755761888, 756028285, 756339345, 756355377, 756381896, 756467809, 756764211, 756867423)
 
 
-# 2. Take the vod_id value for that row, and find the corresponding file from chat_data.
+correspondingFileValues = c(X732422168, X732590883, X732649888, X732902745, X732923687, X733055333, X733141847, X733218074, X733309525, X733381724, X733423912, X733560822, X733617744, X733778047, X733888858, X733897215, X733961959, X734080945, X734084727, X734149980, X734152320, X734297975, X734462011, X734509535, X734515241, X734599846, X734634839, X734642382, X734658719, X734658912, X734659884, X734712546, X734723250, X734813973, X734863301, X735037542, X735069020, X735098869, X735138477, X735238359, X735324021, X735365724, X735388275, X735406816, X735431204, X735446517, X735501370, X735573553, X735627516, X735681997, X735760878, X735802228, X735874898, X735888527, X735966185, X736060712, X736078601, X736081921, X736083431, X736099235, X736114714, X736275158, X736298400, X738399552, X738453831, X738603474, X738704813, X738830532, X738867256, X738995313, X739077387, X739134629, X739285759, X739300735, X739353870, X739377281, X739435110, X739493901, X739673683, X739861214, X739993282, X740012400, X740016439, X740254008, X740456803, X740577349, X740610742, X740650633, X740688070, X740696504, X740791246, X740897151, X740929502, X741084619, X741112115, X741195689, X741218165, X741269486, X741276168, X741302422, X741407576, X741471634, X741588256, X741589911, X741627098, X741643559, X741661485, X741699801, X741748646, X741785910, X741820994, X741835950, X741873832, X741941851, X741953896, X742037638, X742539532, X742547922, X742641837, X742729577, X742802990, X742803758, X742856138, X743058030, X743108790, X743165820, X743197021, X743278970, X743535931, X743642806, X743683798, X743706675, X743750639, X743826825, X744000098, X744716456, X744749795, X744820200, X744863077, X744978950, X744986081, X745021335, X745033438, X745064355, X745095778, X745103945, X745104227, X745202461, X745229298, X745532793, X745586635, X745724664, X745725181, X745794265, X745894887, X745916093, X745979816, X746008884, X746017979, X746067139, X746192173, X746237660, X746354761, X746543309, X746605777, X746694425, X746812421, X746812792, X748857757, X748862134, X748886983, X749043488, X749133787, X749168536, X749217129, X749385237, X749480811, X749563932, X749572538, X749626536, X749706053, X749709633, X749771125, X749801009, X749906356, X749996120, X749998158, X750082337, X750117402, X750152941, X750245426, X750561643, X751921888, X751985019, X752038852, X752149221, X752212664, X752714338, X752730210, X752770512, X752781099, X752848796, X753029621, X753109461, X753175271, X753444544, X753631208, X753812846, X753884301, X755250632, X755360796, X755466433, X755761888, X756028285, X756339345, X756355377, X756381896, X756467809, X756764211, X756867423)
 
-corresponding_file <- X732422168
+finalBucket1 <- vector()
+finalBucket2 <- vector()
 
-#         * For this file: if content_offset_seconds is within (timestamp, timestamp + length), 
-#                          then put that Message into bucket 1.  
-#                          otherwise, put that Message into bucket 2.  
-# Compare word frequency between bucket 1 and bucket 2
+#for (i in 1:3) {
 
+  # For each row of highlights: 
+  # 1. Use the Timestamp and Length columns to calculate a specific range of time: 
+  #         (timestamp, timestamp + length)
+  highlights_modified <- highlights %>% 
+    mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
+    filter(vod_id == filterByValues[1]) # <--------------------------------change this to be for different video on demand IDs.
+  corresponding_file <- eval(parse(text = 'X732422168')) # <--------------------------------change this to be for different video on demand IDs.  
+  #if (i == 1) { corresponding_file <- X732422168 }
+  #if (i == 2) { corresponding_file <- X732590883 }
+  #if (i == 3) { corresponding_file <- X732649888 }
+  
+  lower_bound1 <- highlights_modified$timestamp[1]
+  upper_bound1 <- highlights_modified$timestamp_plus_length[1]
+  
+  lower_bound2 <- highlights_modified$timestamp[2]
+  upper_bound2 <- highlights_modified$timestamp_plus_length[2]
+  
+  allBoundsNested <- vector()
+  for (i in 1:nrow(highlights_modified)) {
+    lowerBoundTemp <- highlights_modified$timestamp[i]
+    upperBoundTemp <- highlights_modified$timestamp_plus_length[i]
+    boundsVector <- c(lowerBoundTemp, upperBoundTemp)
+    allBoundsNested <- c(allBoundsNested, boundsVector)
+  }
+  
+  vod_id_value <- highlights_modified$vod_id[1]
+  
+  
+  # 2. Take the vod_id value for that row, and find the corresponding file from chat_data.
+  
+  
+  
+  #         * For this file: if content_offset_seconds is within (timestamp, timestamp + length), 
+  #                          then put that Message into bucket 1.  
+  #                          otherwise, put that Message into bucket 2.  
+  # Compare word frequency between bucket 1 and bucket 2
+  
+  
+  # (corresponding_file$content_offset_seconds[2800] >= lower_bound) && (corresponding_file$content_offset_seconds[2800] <= upper_bound) returns TRUE
+  
+  
+  library(rjson)
+  library(stringr)
+  
+  
+  bucket1 <- vector() # part of the highlight
+  bucket2 <- vector() # not part of the highlight
+  for (i in 1:nrow(corresponding_file)) { # if the content offset is within the bounds
+    tryCatch({
+      original <- corresponding_file$message[i]
+      # Before making replacements to make *original* a valid JSON string, we need to 
+      # protect the textual integrity of the value referred to by body and 
+      # the value referred to by fragments/text, which is clearly derived from the body key.  
+      
+      #firstPart <- "{'body': '"
+      #remainder <- sub(".*body': '", "", original) 
+      #secondPart <- sub("', 'fragments.*", "", remainder)
+      #thirdPart <- "', 'fragments': [{'text': '"
+      #remainder <- sub(".*'text': '", "", original)
+      #fourthPart <- sub("'}], 'is_action'.*", "", remainder)
+      #lastPart <- paste("'}], 'is_action': ", sub(".*'}], 'is_action': ", "", original), sep="")
+      
+      #firstPart, thirdPart, lastPart
+      #firstPart <- str_replace_all(firstPart, "'", "\"")
+      #firstPart <- str_replace_all(firstPart, "False", "\"False\"")
+      #firstPart <- str_replace_all(firstPart, "True", "\"True\"")
+      
+      #thirdPart <- str_replace_all(thirdPart, "'", "\"")
+      #thirdPart <- str_replace_all(thirdPart, "False", "\"False\"")
+      #thirdPart <- str_replace_all(thirdPart, "True", "\"True\"")
+      
+      #lastPart <- str_replace_all(lastPart, "'", "\"")
+      #lastPart <- str_replace_all(lastPart, "False", "\"False\"")
+      #lastPart <- str_replace_all(lastPart, "True", "\"True\"")
+      
+      #temp <- paste(firstPart, secondPart, thirdPart, fourthPart, lastPart, sep="")
+      
+      #converted <- fromJSON(temp)
+      
+      
+      
+      remainder <- sub(".*body': '", "", original) 
+      textBody <- sub("', '.*", "", remainder)
+      
+      textBody <- sub(".*body': \"", "", textBody) # a minority of entries come in a different format, with JSON-like backslashes
+      textBody <- sub("\".*", "", textBody)
+      
+      
+      
+      #isHighlight <- FALSE
+      #for (j in 1:length(allBoundsNested)) {
+      #  if (j %% 2 == 1) { # if it's an odd index
+      #    if (
+      #      dataset$content_offset_seconds[j] >= allBoundsNested[j]
+      #      && 
+      #      dataset$content_offset_seconds[j + 1] <= allBoundsNested[j + 1]
+      #    ) {
+      #      isHighlight <- TRUE
+      #      }
+      #  }
+      #}
+      
+      messageInHighlight <- FALSE
+      for(n in 0:(floor(length(allBoundsNested)/2) - 1)) {
+        if (allBoundsNested[2*n + 1] <= corresponding_file$content_offset_seconds[i] && 
+            corresponding_file$content_offset_seconds[i] <= allBoundsNested[2*n + 2]) {
+          messageInHighlight <- TRUE
+        }
+      }
+  
+      if ( messageInHighlight
+        #if the message we're looking at occurs during any kind of highlight
+        ) {
+      # if (isHighlight) {
+        bucket1 <- c(bucket1, textBody)
+      } else {
+        bucket2 <- c(bucket2, textBody)
+      }
+    }, error=function(e){cat("ERROR On ROW ", i, ":",conditionMessage(e), "\n")})
+  }
+  
+  finalBucket1 = c(finalBucket1, bucket1)
+  finalBucket2 = c(finalBucket2, bucket2)
 
-# (corresponding_file$content_offset_seconds[2800] >= lower_bound) && (corresponding_file$content_offset_seconds[2800] <= upper_bound) returns TRUE
-
-
-library(rjson)
-library(stringr)
-
-
-bucket1 <- vector() # part of the highlight
-bucket2 <- vector() # not part of the highlight
-for (i in 1:nrow(corresponding_file)) { # if the content offset is within the bounds
-  tryCatch({
-    original <- corresponding_file$message[i]
-    # Before making replacements to make *original* a valid JSON string, we need to 
-    # protect the textual integrity of the value referred to by body and 
-    # the value referred to by fragments/text, which is clearly derived from the body key.  
-    
-    #firstPart <- "{'body': '"
-    #remainder <- sub(".*body': '", "", original) 
-    #secondPart <- sub("', 'fragments.*", "", remainder)
-    #thirdPart <- "', 'fragments': [{'text': '"
-    #remainder <- sub(".*'text': '", "", original)
-    #fourthPart <- sub("'}], 'is_action'.*", "", remainder)
-    #lastPart <- paste("'}], 'is_action': ", sub(".*'}], 'is_action': ", "", original), sep="")
-    
-    #firstPart, thirdPart, lastPart
-    #firstPart <- str_replace_all(firstPart, "'", "\"")
-    #firstPart <- str_replace_all(firstPart, "False", "\"False\"")
-    #firstPart <- str_replace_all(firstPart, "True", "\"True\"")
-    
-    #thirdPart <- str_replace_all(thirdPart, "'", "\"")
-    #thirdPart <- str_replace_all(thirdPart, "False", "\"False\"")
-    #thirdPart <- str_replace_all(thirdPart, "True", "\"True\"")
-    
-    #lastPart <- str_replace_all(lastPart, "'", "\"")
-    #lastPart <- str_replace_all(lastPart, "False", "\"False\"")
-    #lastPart <- str_replace_all(lastPart, "True", "\"True\"")
-    
-    #temp <- paste(firstPart, secondPart, thirdPart, fourthPart, lastPart, sep="")
-    
-    #converted <- fromJSON(temp)
-    
-    
-    
-    remainder <- sub(".*body': '", "", original) 
-    textBody <- sub("', '.*", "", remainder)
-    
-    textBody <- sub(".*body': \"", "", textBody) # a minority of entries come in a different format, with JSON-like backslashes
-    textBody <- sub("\".*", "", textBody)
-    
-    
-    
-    #isHighlight <- FALSE
-    #for (j in 1:length(allBoundsNested)) {
-    #  if (j %% 2 == 1) { # if it's an odd index
-    #    if (
-    #      dataset$content_offset_seconds[j] >= allBoundsNested[j]
-    #      && 
-    #      dataset$content_offset_seconds[j + 1] <= allBoundsNested[j + 1]
-    #    ) {
-    #      isHighlight <- TRUE
-    #      }
-    #  }
-    #}
-    
-
-    if ( 
-      #if the message we're looking at is any kind of highlight
-      (
-      (corresponding_file$content_offset_seconds[i] >= lower_bound1) && (corresponding_file$content_offset_seconds[i] <= upper_bound1)
-      )
-      ||
-      (
-      (corresponding_file$content_offset_seconds[i] >= lower_bound2) && (corresponding_file$content_offset_seconds[i] <= upper_bound2)
-      )
-      ) {
-    # if (isHighlight) {
-      bucket1 <- c(bucket1, textBody)
-    } else {
-      bucket2 <- c(bucket2, textBody)
-    }
-  }, error=function(e){cat("ERROR On ROW ", i, ":",conditionMessage(e), "\n")})
-}
-
-
-
-
-
-
-
-
-
-
-
+#}
 
 # Last step is scaling this not just for one comparison but for ALL ROWS IN highlights <-> ALL FILES in chat_data
 # Figure out what each column means, as well as the key:value pairs within the message column for each chat_data file
-
+bucket1 <- finalBucket1
+bucket2 <- finalBucket2
 
 ```
 
