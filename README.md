@@ -33,3 +33,15 @@ This project is very complex IMO, so just want you to know that there aren't any
 
 LESGETTIT
 -Chris
+
+
+
+
+
+
+https://raw.githubusercontent.com/gladishd/hypelab/main/differences-all.png?token=ALCNI633YE2BCO7TWNELGK273FXPA
+https://raw.githubusercontent.com/gladishd/hypelab/main/during-highlight-all.png?token=ALCNI6YT43ZKZSHQAHZ6AYK73FXPG
+https://raw.githubusercontent.com/gladishd/hypelab/main/otherwise-all.png?token=ALCNI63CTJ6Q45ICTY7LDBC73FXPG
+https://raw.githubusercontent.com/gladishd/hypelab/main/wordcloud-during-highlight-all.png?token=ALCNI6Z7M7C6NE6PX7KHIOS73FXPI
+https://raw.githubusercontent.com/gladishd/hypelab/main/wordcloud-otherwise-all.png?token=ALCNI6YOKZUHX7N4VIIZZZC73FXPK
+https://raw.githubusercontent.com/gladishd/hypelab/main/words-in-common-all.png?token=ALCNI62OMVIUI7OQWNIQKA273FXPK
