@@ -498,6 +498,9 @@ bucket2 <- finalBucket2 # length for video file 2 is 11845
 ```
 
 ```{r}
+bucket1 <- finalBucket1 # length for video file 1 is 340
+bucket2 <- finalBucket2 # length for video file 2 is 11845
+
 bucket1 <- lapply(bucket1, function(s) strsplit(s, ' ')) # atomize words
 bucket1 <- unlist(bucket1) # flatten
 
@@ -522,8 +525,8 @@ bucket2 <- bucket2[bucket2 != 'character(0)']
 ```{r}
 
 # Find the 10 most frequent terms: term_count
-term_count_during_any_highlight <- freq_terms(bucket1, 10)
-term_count_when_no_highlight <- freq_terms(bucket2, 10)
+term_count_during_any_highlight <- freq_terms(bucket1, 20)
+term_count_when_no_highlight <- freq_terms(bucket2, 20)
 
 # Plot term_count
 plot(term_count_during_any_highlight)
@@ -531,6 +534,9 @@ plot(term_count_when_no_highlight)
 ```
 
 ```{r}
+# reduce vector sizes
+bucket1 <- sample(bucket1, 30000, replace = FALSE)
+
 # Make a vector source
 bucket1_source <- VectorSource(bucket1)
 
@@ -586,6 +592,9 @@ wordcloud(bucket1_word_freqs$term, bucket1_word_freqs$num,
 ```
 
 ```{r}
+# Reduce vector size 
+bucket2 <- sample(bucket2, 17000, replace = FALSE)
+
 # Make a vector source
 bucket2_source <- VectorSource(bucket2)
 
