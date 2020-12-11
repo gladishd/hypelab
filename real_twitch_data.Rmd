@@ -362,15 +362,15 @@ filterByValues = c(732422168, 732590883, 732649888, 732902745, 732923687, 733055
 finalBucket1 <- vector()
 finalBucket2 <- vector()
 
-for (i in 1:length(filterByValues)) {
+for (val in 1:length(filterByValues)) {
 
   # For each row of highlights: 
   # 1. Use the Timestamp and Length columns to calculate a specific range of time: 
   #         (timestamp, timestamp + length)
   highlights_modified <- highlights %>% 
     mutate(timestamp_plus_length = timestamp + length) %>% # we'll do the single case for now
-    filter(vod_id == filterByValues[i]) # <--------------------------------change this to be for different video on demand IDs.
-  corresponding_file <- eval(parse(text = paste('X', filterByValues[i], sep=''))) # <--------------------------------change this to be for different video on demand IDs.  
+    filter(vod_id == filterByValues[val]) # <--------------------------------change this to be for different video on demand IDs.
+  corresponding_file <- eval(parse(text = paste('X', filterByValues[val], sep=''))) # <--------------------------------change this to be for different video on demand IDs.  
   #if (i == 1) { corresponding_file <- X732422168 }
   #if (i == 2) { corresponding_file <- X732590883 }
   #if (i == 3) { corresponding_file <- X732649888 }
@@ -478,9 +478,9 @@ for (i in 1:length(filterByValues)) {
         #if the message we're looking at occurs during any kind of highlight
         ) {
       # if (isHighlight) {
-        bucket1 <- c(bucket1, paste(textBody, filterByValues[i], sep=""))
+        bucket1 <- c(bucket1, paste(textBody, filterByValues[val], sep=""))
       } else {
-        bucket2 <- c(bucket2, paste(textBody, filterByValues[i], sep=""))
+        bucket2 <- c(bucket2, paste(textBody, filterByValues[val], sep=""))
       }
     }, error=function(e){cat("ERROR On ROW ", i, ":",conditionMessage(e), "\n")})
   }
