@@ -748,6 +748,7 @@ bucket2nohighlight <- read_csv("bucket2-no-highlight.txt")
 
 
 ```{r}
+# This block of code is just for doing some preliminary bigram stuff
 bucket1Original <- read_csv("bucket1Original.txt")
 
 bucket2Original <- read_csv("bucket2Original.txt")
@@ -1235,9 +1236,208 @@ word_cors %>%
 ```
 
 
+```{r}
+
+
+### re-paste the code
+bucket1Original <- read_csv("bucket1Original.txt")
+
+bucket2Original <- read_csv("bucket2Original.txt")
+
+
+bucket1asVector <- unlist(bucket1Original$amateurs732422168)
+bucket1asVector <- iconv(enc2utf8(bucket1asVector), sub='byte')
 
 
 
+sentences <- lapply(bucket1asVector, function(x) { str_sub(x, 1, nchar(x) - 9) })
+VODIDs <- lapply(bucket1asVector, function(x) { str_sub(x, -9, -1) })
+sentences = unlist(sentences)
+VODIDs = unlist(VODIDs)
+
+bucket1OriginalAsTibble <- tibble( text = sentences, book = as.factor(VODIDs))
+
+
+
+
+bucket2asVector <- unlist(bucket2Original$yoooooooooooo732422168)
+bucket2asVector <- iconv(enc2utf8(bucket2asVector), sub='byte')
+
+
+
+
+sentences <- lapply(bucket2asVector, function(x) { str_sub(x, 1, nchar(x) - 9) })
+VODIDs <- lapply(bucket2asVector, function(x) { str_sub(x, -9, -1) })
+sentences = unlist(sentences)
+VODIDs = unlist(VODIDs)
+
+bucket2OriginalAsTibble <- tibble( text = sentences, book = as.factor(VODIDs))
+### end of re-pasted code
+
+
+```
+```{r}
+bucket1Original <- read_csv("bucket1Original.txt")
+bucket2Original <- read_csv("bucket2Original.txt")
+```
+
+```{r}
+library(quanteda)
+library(quanteda.textstats)
+
+
+
+bucket1asVector <- unlist(bucket1Original$amateurs732422168)
+bucket2asVector <- unlist(bucket2Original$yoooooooooooo732422168)
+bucket1WithoutVODID <- gsub('.{9}$', '', bucket1asVector) # because nchar doesn't mesh with invalid multibyte strings
+bucket2WithoutVODID <- gsub('.{9}$', '', bucket2asVector)
+
+
+VODIDs1 <- lapply(bucket1asVector, function(x) { str_sub(x, -9, -1) })
+VODIDs2 <- lapply(bucket2asVector, function(x) { str_sub(x, -9, -1) })
+bucket1OriginalAsTibble <- tibble( text = bucket1WithoutVODID, vod = VODIDs1)
+bucket2OriginalAsTibble <- tibble( text = bucket2WithoutVODID, vod = VODIDs2)
+
+# filter out non-numeric glitches in the vod column
+numbers_only <- function(x) !grepl("\\D", x)
+bucket1OriginalAsTibble <- bucket1OriginalAsTibble[numbers_only(bucket1OriginalAsTibble$vod),]
+bucket2OriginalAsTibble <- bucket2OriginalAsTibble[numbers_only(bucket2OriginalAsTibble$vod),]
+
+# filter out vod id related glitches (they should be of length 9, right?)
+lengthNineOnly <- function(x) nchar(x) == 9
+bucket1OriginalAsTibble <- bucket1OriginalAsTibble[lengthNineOnly(bucket1OriginalAsTibble$vod),]
+bucket2OriginalAsTibble <- bucket2OriginalAsTibble[lengthNineOnly(bucket2OriginalAsTibble$vod),]
+```
+
+```{r}
+total <- ''
+uniqueVODs <- unlist(unique(bucket1OriginalAsTibble$vod))
+
+for (id in uniqueVODs) {
+  res = 'VODIDONDEMAND'
+  asdf <- bucket1OriginalAsTibble[bucket1OriginalAsTibble$vod == id,]
+  text <- paste(asdf$text, collapse = ' ')
+  text <- paste(c(res, text), collapse = ' ')
+  total <- paste(total, text, collapse = ' ')
+}
+
+
+
+library(readtext)
+data_char_mobydick <- texts(readtext("http://www.gutenberg.org/cache/epub/2701/pg2701.txt"))
+names(data_char_mobydick) <- "twitch vod"
+data_char_mobydick[1] = total
+vod_corp <- 
+    corpus(data_char_mobydick) %>%
+    corpus_segment(pattern = "VODIDONDEMAND", valuetype = "regex")
+summary(vod_corp, 10)
+# create a dfm
+vod_dfm <- dfm(vod_corp)
+
+# extract row with count for "whale"/"ahab" in each chapter
+# and convert to data frame for plotting
+all_patterns_df <- vod_dfm %>% 
+    dfm_keep(pattern = c("kekw", "lul", "pogchamp", "teep", "teep50", "chris")) %>% 
+    convert(to = "data.frame")
+    
+all_patterns_df$vodid <- uniqueVODs
+
+```
+
+```{r}
+ggplot(data = all_patterns_df, aes(x = vodid, y = kekw)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of kekw')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrenceKekwHighlight.png")
+ggplot(data = all_patterns_df, aes(x = vodid, y = lul)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of lul')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrenceLulHighlight.png")
+ggplot(data = all_patterns_df, aes(x = vodid, y = pogchamp)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of pogchamp')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrencePogchampHighlight.png")
+ggplot(data = all_patterns_df, aes(x = vodid, y = teep)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of teepHighlight')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrenceTeepHighlight.png")
+ggplot(data = all_patterns_df, aes(x = vodid, y = teep50)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of teep50Highlight')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrenceTeep50Highlight.png")
+ggplot(data = all_patterns_df, aes(x = vodid, y = chris)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "VOD", 
+       y = "Frequency",
+       title = paste('Occurrence of chris')) + 
+  theme(
+    panel.background = element_rect(fill = "#fffaff",
+                              colour = "lightblue",
+                              size = 0.1, linetype = "solid"),
+    panel.grid.minor = element_line(colour = "black", size = 0.25), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()
+  ) + 
+  geom_text(aes(label = paste('#', vodid, sep='')))
+ggsave("occurrenceChrisHighlight.png")
+
+
+```
 
 
 
