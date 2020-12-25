@@ -1328,7 +1328,10 @@ for (id in uniqueVODs) {
   text <- paste(c(res, text), collapse = ' ')
   totalOtherwiseBucket2 <- paste(totalOtherwiseBucket2, text, collapse = ' ')
 }
+```
 
+
+```{r}
 
 
 library(readtext)
@@ -1503,11 +1506,34 @@ textplot_xray(dogkwic, scale = "absolute")
 
 
 ```{r}
+library(SentimentAnalysis)
+sentiment <- analyzeSentiment(unlist(bucket1OriginalAsTibble$text))
+categorize <- convertToDirection(sentiment$SentimentQDAP)
+barplot(categorize)
+
 
 ```
 
 
+```{r}
+ggplot(sentiment, aes(x = SentimentQDAP)) + 
+    geom_histogram(position="dodge", binwidth = 0.01) +
+  theme(
+        panel.background = element_rect(size = 0.3, 
+                                        linetype = 6, 
+                                        fill = grDevices::rgb(100,90,94.118, 50, 
+                                                              maxColorValue = 100)),
+        panel.grid.major = element_line(size = 0.3, 
+                                        linetype = 0,
+                                        colour = "white"), 
+        panel.grid.minor = element_line(size = 0.25, 
+                                        linetype = 0,
+                                        colour = "white"), 
+        axis.ticks = element_blank())
+```
 
+
+```
 
 
 
